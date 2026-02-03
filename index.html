@@ -41,33 +41,18 @@
       font-size: 1.75rem;
     }
 
-    /* ===== File Input ===== */
-    input[type="file"] {
-      width: 100%;
-      padding: 0.6rem;
-      border-radius: 0.5rem;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      font-size: 1rem;
-    }
-
-    input[type="file"]:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
     /* ===== Result Div ===== */
     #result {
       display: none; /* hidden until scan starts */
-      margin-top: 1rem;
+      margin-top: 1.25rem;
       padding: 0.75rem;
       border-radius: 0.5rem;
       border: 1px solid var(--border);
       background: var(--card);
-      word-break: break-word;       /* wrap at spaces, not mid-word */
+      word-break: break-word;
       overflow-wrap: break-word;
-      font-size: 1rem;              /* default text size */
+      font-size: 1rem;
+      text-align: center;
     }
 
     a {
@@ -79,7 +64,7 @@
       display: block;
       width: 100%;
       text-align: center;
-      font-size: 1.8rem;   /* adjust for mobile */
+      font-size: 1.25rem;   
       padding: 1.5rem;
       border-radius: 1rem;
       border: 1px solid var(--border);
@@ -88,16 +73,11 @@
       cursor: pointer;
     }
 
-    #customUpload:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
     #fileName {
       margin-top: 1rem;
-      font-size: 1.6rem;
+      font-size: 1.25rem;
       text-align: center;
-      word-break: break-all; /* wrap long filenames */
+      word-break: break-all; 
     }
 
     *,
@@ -109,38 +89,40 @@
     /* ===== Mobile adjustments ===== */
     @media (max-width: 600px) {
       body {
-        max-width: 100%;      /* fill screen */
-        padding: 1rem;        /* small margin */
+        max-width: 100%;
+        padding: 1rem;
       }
 
       h1 {
-        font-size: 2.5rem;    /* big title but not massive */
+        font-size: 2rem;
         text-align: center;
         margin-bottom: 1.5rem;
       }
 
-      input[type="file"] {
-        font-size: 1.8rem;    /* readable & tappable */
-        padding: 1.5rem;      /* good finger area */
+      #customUpload {
+        font-size: 1.5rem;
+        padding: 1.5rem;
         border-radius: 1rem;
         text-align: center;
       }
 
+      #fileName {
+        font-size: 1.5rem;
+      }
+
       #result {
-        font-size: 1.8rem;    /* readable result text */
-        padding: 1.5rem;      /* decent size box */
+        font-size: 1.5rem;
+        padding: 1.5rem;
         border-radius: 1rem;
         text-align: center;
       }
     }
-
   </style>
 </head>
 <body>
 
   <h1>Emily's QR Code Reader 😇</h1>
 
-  <!-- File upload -->
   <!-- Hidden native file input -->
   <input type="file" accept="image/*" id="fileInput" style="display: none;" />
 
@@ -161,18 +143,19 @@
     const fileInput = document.getElementById("fileInput");
     const resultDiv = document.getElementById("result");
     const fileNameDiv = document.getElementById("fileName");
-
-    // Show selected filename
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        fileNameDiv.textContent = fileInput.files[0].name;
-      } else {
-        fileNameDiv.textContent = "No file selected";
-      }
-    });
+    const customUpload = document.getElementById("customUpload");
 
     // ZXing QR reader instance
     let codeReader = new ZXing.BrowserQRCodeReader();
+
+    /* ===== Clear file input & hide result on page load/back ===== */
+    function clearFileInput() {
+      fileInput.value = "";
+      fileNameDiv.textContent = "No file selected";
+      resultDiv.style.display = "none";
+    }
+    window.addEventListener("load", clearFileInput);
+    window.addEventListener("pageshow", clearFileInput);
 
     /* ===== Timeout helper with countdown ===== */
     function decodeWithTimeout(promise, ms, countdownCallback) {
@@ -200,10 +183,16 @@
     fileInput.addEventListener("change", async () => {
       const file = fileInput.files[0];
       if (!file) return; // no file selected
+      
+      fileNameDiv.textContent = file.name; // Show filename
 
-      fileInput.disabled = true; // disable input while scanning
+      // Disable input AND style label to look disabled
+      fileInput.disabled = true;
+      customUpload.style.opacity = "0.5";
+      customUpload.style.cursor = "not-allowed";
+      customUpload.classList.add("disabled"); // add class to label
       resultDiv.style.display = "block"; // show result container
-      resultDiv.textContent = "Reading... 7s remaining 👀"; // initial text
+      resultDiv.textContent = "Reading... 7s remaining 🔍"; // initial text
 
       const imgUrl = URL.createObjectURL(file); // create temporary URL for ZXing
 
@@ -222,16 +211,12 @@
 
         // If result is a URL, show clickable link
         if (/^https?:\/\//i.test(text)) {
-          resultDiv.innerHTML = `
-            QR Code goes to:<br>
-            <a href="${text}" target="_blank" rel="noopener noreferrer">
-              ${text}
-            </a><br><br>
+          resultDiv.innerHTML = `✅ QR Code goes to:
+            <br>
+            <a href="${text}" target="_blank" rel="noopener noreferrer">${text}</a>
+            <br><br>
             🛑 Does that link look sketchy?<br>Inspect it with 
-            <a href="https://wheregoes.com/?url=${encodeURIComponent(text)}" target="_blank">
-              wheregoes.com
-            </a>
-          `;
+            <a href="https://wheregoes.com/?url=${encodeURIComponent(text)}" target="_blank">wheregoes.com</a>`;
         } else {
           // else show raw QR code data
           resultDiv.textContent = `QR Code data: ${text}`;
@@ -243,6 +228,8 @@
           "I couldn't read that QR code 😭 Could you try a clearer image?";
       } finally {
         // reset for next scan
+        customUpload.style.opacity = "1";
+        customUpload.style.cursor = "pointer";
         fileInput.disabled = false; // re-enable input
         codeReader.reset(); // clear internal ZXing state
         codeReader = new ZXing.BrowserQRCodeReader(); // fresh instance
