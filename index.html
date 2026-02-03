@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Emily's QR Code Reader</title>
+  <title>Emily's QR Code Reader 💖</title>
 
   <style>
     /* ===== Color Variables ===== */
@@ -37,6 +37,7 @@
 
     h1 {
       margin-bottom: 1rem;
+      font-size: 1.75rem;
     }
 
     /* ===== File Input ===== */
@@ -47,9 +48,9 @@
       border: 1px solid var(--border);
       background: var(--card);
       color: var(--text);
+      font-size: 1rem;
     }
 
-    /* Disabled state styling */
     input[type="file"]:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -64,11 +65,30 @@
       border: 1px solid var(--border);
       background: var(--card);
       font-weight: 600;
-      word-break: break-all;
+      word-break: break-word;       /* wrap at spaces, not mid-word */
+      overflow-wrap: break-word;
+      font-size: 1rem;              /* default text size */
     }
 
     a {
       color: var(--link);
+    }
+
+    /* ===== Mobile adjustments ===== */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      #result {
+        font-size: 1.25rem;   /* bigger result text */
+        padding: 1rem;
+      }
+
+      input[type="file"] {
+        font-size: 1.2rem;    /* bigger upload text */
+        padding: 0.8rem;      /* bigger tap area for fingers */
+      }
     }
   </style>
 </head>
@@ -92,7 +112,7 @@
     // ZXing QR reader instance
     let codeReader = new ZXing.BrowserQRCodeReader();
 
-    /* ===== Helper: Clear file input & hide result on page load / back ===== */
+    /* ===== Clear file input & hide result on page load/back ===== */
     function clearFileInput() {
       fileInput.value = ""; // empty file input
       resultDiv.style.display = "none"; // hide previous result
@@ -100,7 +120,7 @@
     window.addEventListener("load", clearFileInput);
     window.addEventListener("pageshow", clearFileInput);
 
-    /* ===== Helper: Timeout wrapper with countdown ===== */
+    /* ===== Timeout helper with countdown ===== */
     function decodeWithTimeout(promise, ms, countdownCallback) {
       let remaining = ms / 1000; // convert ms → seconds
       countdownCallback(remaining); // show initial countdown
@@ -162,7 +182,7 @@
       } catch (err) {
         // scan failed or timed out
         resultDiv.textContent =
-          "I couldn’t read that QR code 😭 Could you try a clearer image?";
+          "I couldn't read that QR code 😭 Could you try a clearer image?";
       } finally {
         // reset for next scan
         fileInput.disabled = false; // re-enable input
