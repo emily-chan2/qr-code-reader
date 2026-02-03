@@ -1,15 +1,15 @@
-# QR Code Reader 💻✨
+# QR Code Reader
 
 A QR code reader that lets you upload images and decode them directly in the browser. Sometimes someone texts me a QR code and I'm like, how do I scan this thing?
 
 ---
 
-## 🔹 Features
+## ✨ Features
 
 - Upload a QR code image and read it instantly  
-- Countdown timer during scanning so you know it’s working ⏱  
+- Countdown timer during scanning so you know it’s working
 - Result is clickable if it contains a URL  
-- Dark mode support (follows your system theme) 🌙  
+- Dark mode support (follows your system theme)
 - Fully client-side — no backend/server needed (you could even save `index.html` to your computer and use it locally)
 
 ---
