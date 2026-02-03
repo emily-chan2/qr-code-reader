@@ -227,7 +227,10 @@
             <a href="${text}" target="_blank" rel="noopener noreferrer">
               ${text}
             </a><br><br>
-            Does the link look sketchy? Copy it and use <a href="https://wheregoes.com/">wheregoes.com</a> to find out where it goes.
+            🛑 Does that link look sketchy?<br>Inspect it with 
+            <a href="https://wheregoes.com/?url=${encodeURIComponent(text)}" target="_blank">
+              wheregoes.com
+            </a>
           `;
         } else {
           // else show raw QR code data
