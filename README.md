@@ -2,7 +2,7 @@
 
 [https://emily-chan2.github.io/qr-code-reader/](https://emily-chan2.github.io/qr-code-reader/)
 
-A QR code reader that lets you upload images and decode them directly in the browser. Sometimes someone texts me a QR code and I'm like, how do I scan this thing?
+A QR code reader that lets you upload images and decode them directly in the browser. Sometimes someone texts me a QR code and I'm like, how do I scan this thing? This little web app gives you a solution to that :)
 
 ---
 
