@@ -75,31 +75,40 @@
       color: var(--link);
     }
 
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
     /* ===== Mobile adjustments ===== */
     @media (max-width: 600px) {
       body {
-        max-width: 100%;
-        padding: 1rem;
+        max-width: 100%;      /* fill screen */
+        padding: 1rem;        /* small margin */
       }
 
       h1 {
-        font-size: 4rem;
+        font-size: 2.5rem;    /* big title but not massive */
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
       }
 
       input[type="file"] {
-        font-size: 4rem;
-        padding: 4rem;
-        border-radius: 2rem;
+        font-size: 1.8rem;    /* readable & tappable */
+        padding: 1.5rem;      /* good finger area */
+        border-radius: 1rem;
+        text-align: center;
       }
 
       #result {
-        font-size: 4rem; 
-        padding: 4rem;
-        border-radius: 2rem;
+        font-size: 1.8rem;    /* readable result text */
+        padding: 1.5rem;      /* decent size box */
+        border-radius: 1rem;
+        text-align: center;
       }
     }
+
   </style>
 </head>
 <body>
