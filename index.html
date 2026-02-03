@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emily's QR Code Reader</title>
+
+  <style>
+    /* ===== Color Variables ===== */
+    :root {
+      --bg: #fafafa;
+      --text: #111827;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --link: #2563eb;
+    }
+
+    /* Dark mode overrides */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --text: #e5e7eb;
+        --card: #020617;
+        --border: #1e293b;
+        --link: #60a5fa;
+      }
+    }
+
+    /* ===== Body / Layout ===== */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    /* ===== File Input ===== */
+    input[type="file"] {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+
+    /* Disabled state styling */
+    input[type="file"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== Result Div ===== */
+    #result {
+      display: none; /* hidden until scan starts */
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    a {
+      color: var(--link);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Emily's QR Code Reader 😇</h1>
+
+  <!-- File upload -->
+  <input type="file" accept="image/*" id="fileInput" />
+
+  <!-- Result container -->
+  <div id="result"></div>
+
+  <!-- ZXing library -->
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const resultDiv = document.getElementById("result");
+
+    // ZXing QR reader instance
+    let codeReader = new ZXing.BrowserQRCodeReader();
+
+    /* ===== Helper: Clear file input & hide result on page load / back ===== */
+    function clearFileInput() {
+      fileInput.value = ""; // empty file input
+      resultDiv.style.display = "none"; // hide previous result
+    }
+    window.addEventListener("load", clearFileInput);
+    window.addEventListener("pageshow", clearFileInput);
+
+    /* ===== Helper: Timeout wrapper with countdown ===== */
+    function decodeWithTimeout(promise, ms, countdownCallback) {
+      let remaining = ms / 1000; // convert ms → seconds
+      countdownCallback(remaining); // show initial countdown
+
+      // interval to update countdown every second
+      const interval = setInterval(() => {
+        remaining--;
+        countdownCallback(remaining);
+      }, 1000);
+
+      return Promise.race([
+        promise.finally(() => clearInterval(interval)), // clear interval if scan finishes early
+        new Promise((_, reject) =>
+          setTimeout(() => {
+            clearInterval(interval); // clear interval if timeout hits
+            reject(new Error("Scan timed out"));
+          }, ms)
+        )
+      ]);
+    }
+
+    /* ===== Main file upload listener ===== */
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return; // no file selected
+
+      fileInput.disabled = true; // disable input while scanning
+      resultDiv.style.display = "block"; // show result container
+      resultDiv.textContent = "Reading... 7s remaining 👀"; // initial text
+
+      const imgUrl = URL.createObjectURL(file); // create temporary URL for ZXing
+
+      try {
+        // attempt scan with 7s timeout and countdown
+        const result = await decodeWithTimeout(
+          codeReader.decodeFromImageUrl(imgUrl),
+          7000, // 7 seconds
+          (seconds) => {
+            // update countdown every second
+            resultDiv.textContent = `Reading... ${seconds}s remaining 👀`;
+          }
+        );
+
+        const text = result.text;
+
+        // If result is a URL, show clickable link
+        if (/^https?:\/\//i.test(text)) {
+          resultDiv.innerHTML = `
+            QR Code goes to:
+            <a href="${text}" target="_blank" rel="noopener noreferrer">
+              ${text}
+            </a>
+          `;
+        } else {
+          // else show raw QR code data
+          resultDiv.textContent = `QR Code data: ${text}`;
+        }
+
+      } catch (err) {
+        // scan failed or timed out
+        resultDiv.textContent =
+          "I couldn’t read that QR code 😭 Could you try a clearer image?";
+      } finally {
+        // reset for next scan
+        fileInput.disabled = false; // re-enable input
+        codeReader.reset(); // clear internal ZXing state
+        codeReader = new ZXing.BrowserQRCodeReader(); // fresh instance
+        URL.revokeObjectURL(imgUrl); // free memory
+      }
+    });
+  </script>
+
+</body>
+</html>
