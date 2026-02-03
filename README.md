@@ -17,7 +17,7 @@ A QR code reader that lets you upload images and decode them directly in the bro
 ## ⚠️ Limitations
 
 - QR code reading just works better with your native phone camera since you essentially get like 30 tries per second. With a single image it has to be perfectly clear.
-- You'll have better results if you crop your image so just the QR code is visible and it's as bold and clear as possible.
+- You'll have better results if you crop your image so just the QR code is visible. Sharpening the image and adjusting the contrast, black point, and noise levels can help as well.
 
 ---
 
