@@ -189,6 +189,7 @@
       // Disable input AND style label to look disabled
       fileInput.disabled = true;
       customUpload.style.opacity = "0.5";
+      customUpload.style.userSelect = "none";
       customUpload.style.cursor = "not-allowed";
       customUpload.classList.add("disabled"); // add class to label
       resultDiv.style.display = "block"; // show result container
@@ -224,8 +225,10 @@
 
       } catch (err) {
         // scan failed or timed out
-        resultDiv.textContent =
-          "I couldn't read that QR code 😭 Could you try a clearer image?";
+        resultDiv.innerHTML =
+          `I couldn't read that QR code 😭 Could you try a clearer image?<br><br>Image processing tools
+          that usually help include cropping, straightening, sharpening, increasing constrast,
+          adjusting black point, and denoising.`;
       } finally {
         // reset for next scan
         customUpload.style.opacity = "1";
