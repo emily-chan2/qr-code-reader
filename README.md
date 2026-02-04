@@ -12,7 +12,7 @@ A QR code reader that lets you upload images and decode them directly in the bro
 - Countdown timer during scanning so you know it’s working
 - Result is clickable if it contains a URL  
 - Dark mode support (follows your system theme)
-- Fully client-side — no backend/server needed (you could even save `index.html` to your computer and use it locally)
+- Fully client-side — no backend/server needed
 
 ---
 
