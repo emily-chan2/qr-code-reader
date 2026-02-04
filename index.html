@@ -139,6 +139,11 @@
   <!-- Show selected file name -->
   <div id="fileName">No file selected</div>
 
+  <!-- Preview of uploaded image -->
+  <img id="filePreview" 
+      style="display:none; margin:1rem auto 0 auto; max-width:200px; border-radius:0.5rem; border:1px solid var(--border);" 
+      alt="Uploaded QR preview" />
+
   <!-- Result container -->
   <div id="result"></div>
 
@@ -192,6 +197,21 @@
       if (!file) return; // no file selected
       
       fileNameDiv.textContent = file.name; // Show filename
+
+      const filePreview = document.getElementById("filePreview");
+      if (fileInput.files.length > 0) {
+        fileNameDiv.textContent = file.name;
+
+        // Show preview
+        filePreview.src = URL.createObjectURL(file);
+        filePreview.style.display = "block";
+      } else {
+        fileNameDiv.textContent = "No file selected";
+
+        // Hide preview if no file
+        filePreview.style.display = "none";
+        filePreview.src = "";
+      }
 
       // Disable input AND style label to look disabled
       fileInput.disabled = true;
